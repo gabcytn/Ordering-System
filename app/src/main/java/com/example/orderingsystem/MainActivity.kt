@@ -1,14 +1,13 @@
 package com.example.orderingsystem
 
+import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
-import android.widget.Adapter
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,16 +28,24 @@ class MainActivity : AppCompatActivity() {
 
         newRecyclerView.adapter = MyAdapter(newArrayList)
 
-        findViewById<Button>(R.id.btnCheckout).setOnClickListener {
-            val checkedItems = newArrayList.toMutableList().filter { it.foodIsOrdered }.map { it.foodName }
-            var msg = "Your orders are: "
-            for(i in checkedItems){
-                msg += "$i "
+        findViewById<Button>(R.id.btnAddtoCart).setOnClickListener {
+            val checkedItemNames = newArrayList.toMutableList().filter { it.foodIsOrdered }.map { it.foodName }
+            val checkedItemPrices = newArrayList.toMutableList().filter { it.foodIsOrdered }.map { it.foodPrice }
+
+
+            val intent = Intent(this, CheckoutActivity::class.java)
+            if (checkedItemNames.isNotEmpty()) {
+                intent.putExtra("EXTRA_FOOD", ArrayList(checkedItemNames))
+                intent.putExtra("EXTRA_PRICE", ArrayList(checkedItemPrices))
+                startActivity(intent)
             }
 
-
-            val finalMessage = if (checkedItems.isEmpty()) "No orders placed" else msg
-            Toast.makeText(this, finalMessage, Toast.LENGTH_LONG).show()
+            Toast(this).apply {
+                duration = Toast.LENGTH_SHORT
+                view = layoutInflater.inflate(R.layout.toast_custom, findViewById(R.id.cvToast))
+                show()
+            }
+//            return@setOnClickListener
         }
     }
 
